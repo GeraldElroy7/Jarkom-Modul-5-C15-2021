@@ -337,7 +337,61 @@ OPTIONS=""
 Terakhir, restart DHCP Relay dengan `service isc-dhcp-relay restart`.
 
 
-## Soal 4. Akses dari subnet Blueno dan Cipher hanya diperbolehkan pada pukul 07.00 - 15.00 pada hari Senin sampai Kamis.
+## Soal 1. 
+Agar topologi yang kalian buat dapat mengakses keluar, kalian diminta untuk mengkonfigurasi Foosha menggunakan iptables, tetapi Luffy tidak ingin menggunakan MASQUERADE.
+
+Langkah 1: pada `Foosha`
+
+```
+iptables -t nat -A POSTROUTING -s 192.191.0.0/21 -o eth0 -j SNAT --to-source 192.168.122.25
+```
+
+Langkah 2: Testing 
+- pada `Water 7` 
+
+![image](https://user-images.githubusercontent.com/90212308/145679322-3a0b2a18-3c2e-418a-afcc-2c26304b8983.png)
+
+
+- pada `Blueno`
+
+![image](https://user-images.githubusercontent.com/90212308/145679304-48bd9915-0ee0-4134-9478-1a08754db30f.png)
+
+
+## Soal 2. 
+Kalian diminta untuk mendrop semua akses HTTP dari luar Topologi kalian pada server yang merupakan DHCP Server dan DNS Server demi menjaga keamanan.
+
+Langkah 1: pada `Foosha`
+```
+iptables -A FORWARD -d 192.191.0.8/29 -i eth0 -p tcp --dport 80 -j DROP
+```
+
+Langkah 2: Testing 
+
+pada `Jipangu` dan `Doriki`
+- install netcat
+- jalankan `nc -l -p 80`
+
+- pada `Foosha` Jalankan `nmap -p 80 192.191.0.11` atau `nmap -p 80 192.191.0.10`/
+
+![image](https://user-images.githubusercontent.com/90212308/145680340-b15aedda-70cf-49f8-9171-409c16d5ddd4.png)
+
+## Soal 3. 
+Karena kelompok kalian maksimal terdiri dari 3 orang. Luffy meminta kalian untuk membatasi DHCP dan DNS Server hanya boleh menerima maksimal 3 koneksi ICMP secara bersamaan menggunakan iptables, selebihnya didrop.
+
+Langkah 1: pada `Jipangu` dan `Doriki`
+- Jalankan `iptables -A INPUT -p icmp -m connlimit --connlimit-above 3 --connlimit-mask 0 -j DROP`
+
+Langkah 2: Testing
+- Lakukan Testing dengan Ping `Jipangu` ata `Doriki` dari 4 client sekaligus.
+
+![image](https://user-images.githubusercontent.com/90212308/145679982-2b8f3e78-9484-42fa-8902-34d80f422f03.png)
+![image](https://user-images.githubusercontent.com/90212308/145679987-9f26add8-87c7-4f05-8f2a-2e9bff1b122f.png)
+![image](https://user-images.githubusercontent.com/90212308/145680001-07fc3c89-c214-4a45-9ddf-8b3883cd577e.png)
+![image](https://user-images.githubusercontent.com/90212308/145680013-d7c063d5-ce67-4e21-ac86-565a4ba8a1e7.png)
+
+
+## Soal 4. 
+Akses dari subnet Blueno dan Cipher hanya diperbolehkan pada pukul 07.00 - 15.00 pada hari Senin sampai Kamis.
 
 Langkah 1: pada `Doriki`
 
@@ -373,7 +427,8 @@ Langkah 2: Testing pada `Chipper`<br>
 
 <br>
 
-## Soal 5. Akses dari subnet Elena dan Fukuro hanya diperbolehkan pada pukul 15.01 hingga pukul 06.59 setiap harinya.
+## Soal 5.
+Akses dari subnet Elena dan Fukuro hanya diperbolehkan pada pukul 15.01 hingga pukul 06.59 setiap harinya.
 
 Langkah 1: pada `Doriki`
 
@@ -410,7 +465,8 @@ Langkah 2: Testing pada `Elena`<br>
 
 <br>
 
-## Soal 6. Karena kita memiliki 2 Web Server, Luffy ingin Guanhao disetting sehingga setiap request dari client yang mengakses DNS Server akan didistribusikan secara bergantian pada Jorge dan Maingate
+## Soal 6. 
+Karena kita memiliki 2 Web Server, Luffy ingin Guanhao disetting sehingga setiap request dari client yang mengakses DNS Server akan didistribusikan secara bergantian pada Jorge dan Maingate
 
 - pada `Doriki`:
   1. membuat domain (DNS) yang mengarah ke IP random (dalam hal ini `192.191.21.1`) pada file `/etc/bind/named.conf`
