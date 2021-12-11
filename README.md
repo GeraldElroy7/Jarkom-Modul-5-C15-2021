@@ -142,13 +142,199 @@ iface eth3 inet static
 
 **JIPANGU**
 
+```
+auto eth0
+iface eth0 inet static
+	address 192.191.0.10
+	netmask 255.255.255.248
+	gateway 192.191.0.9
+```
+
 **DORIKI**
+
+```
+auto eth0
+iface eth0 inet static
+	address 192.191.0.11
+	netmask 255.255.255.248
+	gateway 192.191.0.9
+```
 
 **JORGE**
 
+```
+auto eth0
+iface eth0 inet static
+	address 192.191.0.19
+	netmask 255.255.255.248
+	gateway 192.191.0.17
+```
+
 **MAINGATE**
 
+```
+auto eth0
+iface eth0 inet static
+	address 192.191.0.18
+	netmask 255.255.255.248
+	gateway 192.191.0.17
+```
 
+## C. ROUTING
+
+Dengan adanya routing, maka setiap perangkat pada jaringan dapat terhubung. Routing **hanya** dilakukan di Foosha, Water7, dan Guanhao. Untuk Water7 & Guanhao sendiri hanya perlu melakukan default routing.
+
+**FOOSHA** 
+
+```
+##mengarah ke doriki jipangu 
+route add -net 192.191.0.8 netmask 255.255.255.248 gw 192.191.0.1
+##mengarah ke blueno
+route add -net 192.191.0.128 netmask 255.255.255.128 gw 192.191.0.1
+##mengarah ke cipher
+route add -net 192.191.4.0 netmask 255.255.252.0 gw 192.191.0.1
+##mengarah ke elena
+route add -net 192.191.2.0 netmask 255.255.254.0 gw 192.191.0.6
+##mengarah ke fukurou
+route add -net 192.191.1.0 netmask 255.255.255.0 gw 192.191.0.6
+##mengarah ke maingate jorge
+route add -net 192.191.0.16 netmask 255.255.255.248 gw 192.191.0.6
+```
+
+**WATER7**
+```
+##default routing WATER7
+route add -net 0.0.0.0 netmask 0.0.0.0 gw 192.191.0.2
+```
+
+**GUANHAO**
+```
+##default routing GUANHAO
+route add -net 0.0.0.0 netmask 0.0.0.0 gw 192.191.0.5
+```
+
+## D. DHCP Server & DHCP Relay
+
+Pada soal, diminta untuk memberikan ip pada subnet Blueno, Cipher, Fukurou, dan Elena secara dinamis menggunakan bantuan DHCP Server, tidak menggunakan statis seperti biasanya.
+
+Edit file `/etc/dhcp/dhcpd.conf` pada `Jipangu` dan tambahkan sebagai berikut :
+
+```
+subnet 192.191.0.128 netmask 255.255.255.128 {
+    range 192.191.0.130 192.191.0.255;
+    option routers 192.191.0.129;
+    option broadcast-address 192.191.0.255;
+    option domain-name-servers 192.191.0.10;
+    default-lease-time 360;
+    max-lease-time 720;
+}
+
+subnet 192.191.0.8 netmask 255.255.255.248 {
+}
+
+subnet 192.191.4.0 netmask 255.255.252.0 {
+    range 192.191.4.2 192.191.4.255;
+    option routers 192.191.4.1;
+    option broadcast-address 192.191.7.255;
+    option domain-name-servers 192.191.0.10;
+    default-lease-time 360;
+    max-lease-time 720;
+}
+
+subnet 192.191.2.0 netmask 255.255.254.0 {
+    range 192.191.2.2 192.191.2.255;
+    option routers 192.191.2.1;
+    option broadcast-address 192.191.3.255;
+    option domain-name-servers 192.191.0.10;
+    default-lease-time 360;
+    max-lease-time 720;
+}
+
+subnet 192.191.1.0 netmask 255.255.255.0 {
+    range 192.191.1.2 192.191.1.255;
+    option routers 192.191.1.1;
+    option broadcast-address 192.191.1.255;
+    option domain-name-servers 192.191.0.10;
+    default-lease-time 360;
+    max-lease-time 720;
+}
+```
+
+Restart service dhcp menggunakan `service isc-dhcp-server restart`.
+
+Untuk DHCP Relay (pada Foosha, Water7, dan Guanhao), install terlebih dulu dengan command :
+
+```
+apt-get update
+apt-get install isc-dhcp-relay -y
+```
+
+Ubah konfigurasi file `/etc/default/isc-dhcp-relay` pada tiap Router sebagai berikut :
+
+**FOOSHA**
+
+```
+# Defaults for isc-dhcp-relay initscript
+# sourced by /etc/init.d/isc-dhcp-relay
+# installed at /etc/default/isc-dhcp-relay by the maintainer scripts
+
+#
+# This is a POSIX shell fragment
+#
+
+# What servers should the DHCP relay forward requests to?
+SERVERS="192.191.0.10"
+
+# On what interfaces should the DHCP relay (dhrelay) serve DHCP requests?
+INTERFACES="eth1 eth2"
+
+# Additional options that are passed to the DHCP relay daemon?
+OPTIONS=""
+```
+
+**WATER7**
+
+```
+# Defaults for isc-dhcp-relay initscript
+# sourced by /etc/init.d/isc-dhcp-relay
+# installed at /etc/default/isc-dhcp-relay by the maintainer scripts
+
+#
+# This is a POSIX shell fragment
+#
+
+# What servers should the DHCP relay forward requests to?
+SERVERS="192.191.0.10"
+
+# On what interfaces should the DHCP relay (dhrelay) serve DHCP requests?
+INTERFACES="eth0 eth1 eth2 eth3"
+
+# Additional options that are passed to the DHCP relay daemon?
+OPTIONS=""
+```
+
+**GUANHAO**
+
+```
+# Defaults for isc-dhcp-relay initscript
+# sourced by /etc/init.d/isc-dhcp-relay
+# installed at /etc/default/isc-dhcp-relay by the maintainer scripts
+
+#
+# This is a POSIX shell fragment
+#
+
+# What servers should the DHCP relay forward requests to?
+SERVERS="192.191.0.10"
+
+# On what interfaces should the DHCP relay (dhrelay) serve DHCP requests?
+INTERFACES="eth0 eth1 eth2"
+
+# Additional options that are passed to the DHCP relay daemon?
+OPTIONS=""
+```
+
+Terakhir, restart DHCP Relay dengan `service isc-dhcp-relay restart`.
 
 
 ## Soal 4. Akses dari subnet Blueno dan Cipher hanya diperbolehkan pada pukul 07.00 - 15.00 pada hari Senin sampai Kamis.
