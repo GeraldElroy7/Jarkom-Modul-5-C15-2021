@@ -68,7 +68,7 @@ Lakukan perhitungan dengan tree unduk mendapatkan NID pada tiap subnet :
 
 ![image](https://user-images.githubusercontent.com/64303057/145676113-afb9dfe4-43d7-470b-af00-1e5b22ac1494.png)
 
-Karena semua host diberi IP oleh DHCP Server, maka static subnetting hanya dilakukan di Router (ex : FOOSHA), DNS Server, DHCP Server, dan Web Server.
+Karena semua host diberi IP oleh DHCP Server, maka static subnetting hanya dilakukan di Router (contoh : FOOSHA), DNS Server, DHCP Server, dan Web Server.
 
 Pada masing-masing network configuration adalah sebagai berikut :
 
