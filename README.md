@@ -399,7 +399,9 @@ Langkah 2: Testing pada `Elena`<br>
   Langkah 3: Testing pada `Fukurou`<br>
 - berhasil<br>
   ![image](https://user-images.githubusercontent.com/71221969/145495587-04969f1d-e8c5-4776-8894-eed7a2d08efb.png)
-  <br>- gagal
+ 
+ - gagal
+ 
   ![image](https://user-images.githubusercontent.com/71221969/145497035-3d13aa84-8723-47b3-8da0-8accf181e8c3.png)
 
 ### Kendala:
